@@ -6,22 +6,25 @@
                 Open Channel
                 <div @click="enterChannel('sendbird_open_channel_4391_62d88d427b64593eee593ec36dd849c21e756eaa')">
                     Join Channel 1
-                    <span v-if="newMessage && channelUnreadUrl === 'sendbird_open_channel_4391_62d88d427b64593eee593ec36dd849c21e756eaa'" style="color: red"> New Message</span>
+                    <span class="dot" v-if="newMessage && channelUnreadUrl === 'sendbird_open_channel_4391_62d88d427b64593eee593ec36dd849c21e756eaa'" style="color: red"></span>
                 </div>
                 <div @click="enterChannel('sendbird_open_channel_4391_55f11ea183337909e05c02a7f944f82630b2b800')">
                     Join Channel 2
-                    <span v-if="newMessage && channelUnreadUrl === 'sendbird_open_channel_4391_55f11ea183337909e05c02a7f944f82630b2b800'" style="color: red"> New Message</span>
+                    <span class="dot" v-if="newMessage && channelUnreadUrl === 'sendbird_open_channel_4391_55f11ea183337909e05c02a7f944f82630b2b800'" style="color: red"></span>
                 </div>
                 <br/><br/><br/><br/>
                 Group Channel
-                <div @click="createGroupChannel(['123', 'qwe'])">
-                    Chat with user 1
-                    <span v-if="newMessage && channelUnreadUrl === 'sendbird_group_channel_321157497_c8a029c101e9b6296bf1f086ac86884abc26ee64'" style="color: red"> New Message</span>
+                <div @click="createGroupChannel(['123', 'seller'])" v-if="user.nickname === '123' || user.nickname === 'seller'">
+                    Chat with {{ user.nickname === 'seller' ? '123': 'seller' }}
+                    <span class="dot" v-if="newMessage && channelUnreadUrl.find(item => item === 'sendbird_group_channel_321157497_2b747379a3af8b606b303964d076de3477fe0960')" style="color: red"></span>
                 </div>
-                <div @click="createGroupChannel(['123', 'qwe', 'asd'])">
-                    Chat with user 2
-                    <span v-if="newMessage && channelUnreadUrl === 'sendbird_group_channel_321157497_41bbb233d028472d27a86dd0f362d092c162d863'" style="color: red"> New Message</span>
-                    <!-- <span v-if="newMessage" style="color: red"> New Message</span> -->
+                <div @click="createGroupChannel(['qwe', 'seller'])" v-if="user.nickname === 'qwe' || user.nickname === 'seller'">
+                    Chat with {{ user.nickname === 'seller' ? 'qwe': 'seller' }}
+                    <span class="dot" v-if="newMessage && channelUnreadUrl.find(item => item === 'sendbird_group_channel_321252549_56db0bb4cf0df90854f67660736dbcebdb4b53f1')" style="color: red"></span>
+                </div>
+                <div @click="createGroupChannel(['asd', 'seller'])" v-if="user.nickname === 'asd' || user.nickname === 'seller'">
+                    Chat with {{ user.nickname === 'seller' ? 'asd': 'seller' }}
+                    <span class="dot" v-if="newMessage && channelUnreadUrl.find(item => item === 'sendbird_group_channel_320850836_eaf3386bd01bf21499115b4fd597cfc977f29858')" style="color: red"></span>
                 </div>
                 <!-- <button @click="loadMoreChatMessage">Load More Message</button> -->
                 <!-- <button class="create-btn" @click="createChannel">Create Channel</button> -->
@@ -84,7 +87,7 @@ export default {
             message: '',
             replyText: '',
             newMessage: false,
-            user: null,
+            // user: null,
             fileUpload: null,
             channelUrl: "sendbird_open_channel_4391_62d88d427b64593eee593ec36dd849c21e756eaa",
             // channelUrl: "sendbird_open_channel_4391_55f11ea183337909e05c02a7f944f82630b2b800",
@@ -92,12 +95,18 @@ export default {
             channel: {
                 url: ''
             },
-            channelUnreadUrl: null,
+            channelUnreadUrl: [],
+        }
+    },
+
+    computed: {
+        user() {
+            return store.getters.getUser;
         }
     },
 
     mounted() {
-        this.user = store.getters.getUser;
+        // this.user = store.getters.getUser;
         console.log('get User', this.user);
 
         // this.enterChannel();
@@ -111,7 +120,7 @@ export default {
                 othis.scrollToBottom();
             } else {
                 othis.newMessage = true;
-                othis.channelUnreadUrl = channel.url;
+                othis.channelUnreadUrl.push(channel.url);
             }
         }
 
@@ -183,8 +192,9 @@ export default {
         markAsRead(url) {
             console.log('channelUnreadUrl', this.channelUnreadUrl);
             console.log('channelUnreadUrl url', url);
-            if(this.channelUnreadUrl === url) {
-                this.newMessage = false;
+            if(this.channelUnreadUrl.find(item => item === url)) {
+                // this.newMessage = false;
+                this.channelUnreadUrl = this.channelUnreadUrl.filter(item => item != url);
             }
         }
     },
@@ -231,5 +241,12 @@ export default {
 }
 .create-btn {
     margin-left: 10px;
+}
+.dot {
+    height: 10px;
+    width: 10px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
 }
 </style>
